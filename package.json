@@ -1,0 +1,36 @@
+{
+  "name": "react-keyboard-shortcuts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/react-dom": "16.0.11",
+    "eslint": "^5.10.0",
+    "eslint-config-tarwich": "github:tarwich/eslint-config-tarwich",
+    "mobx": "5.6.0",
+    "mobx-react": "^5.4.3",
+    "parcel-bundler": "^1.11.0",
+    "parcel-plugin-prettier": "github:tarwich/parcel-plugin-prettier",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "typescript": "^3.2.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tarwich/react-keyboard-shortcuts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tarwich/react-keyboard-shortcuts/issues"
+  },
+  "homepage": "https://github.com/tarwich/react-keyboard-shortcuts#readme",
+  "eslintConfig": {
+    "extends": "eslint-config-tarwich"
+  }
+}

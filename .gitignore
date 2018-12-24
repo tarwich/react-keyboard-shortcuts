@@ -1,0 +1,13 @@
+# Application
+node_modules
+yarn.lock
+package-lock.json
+.cache
+.tmp
+
+# OS Garbage
+.DS_Store
+
+# Editor garbage
+.vscode
+.idea

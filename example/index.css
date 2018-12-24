@@ -1,0 +1,17 @@
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+}
+
+dd {
+  margin: 0px;
+}
+
+code {
+  border: 1px solid #bbe;
+  border-radius: 3px;
+  background: #ddd;
+  padding: 1px 5px;
+}
