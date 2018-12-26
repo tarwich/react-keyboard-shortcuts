@@ -30,6 +30,35 @@ class Application extends Component {
             '^c ^x': () => (this.value = 'Four'),
           }}
         />
+        <KeyboardShortcuts
+          shortcuts={[
+            {
+              chord: 'z a',
+              action: () => (this.value = 'One'),
+              caption: 'One',
+            },
+            {
+              chord: 'z b',
+              action: () => (this.value = 'Two'),
+              caption: 'Two',
+            },
+            {
+              chord: '^z',
+              action: () => console.log((this.value = 'Three')),
+              caption: 'Three',
+            },
+            {
+              chord: '^c ^z',
+              action: () => console.log((this.value = 'Four')),
+              caption: 'Four',
+            },
+            {
+              chord: '^z ^v',
+              action: () => console.log((this.value = 'Five')),
+              caption: 'Five',
+            },
+          ]}
+        />
         <div>Activated: {this.value}</div>
         Keyboard Shortcuts:
         <dl>

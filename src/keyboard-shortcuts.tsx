@@ -1,28 +1,30 @@
 import { observer } from 'mobx-react';
 import { createElement, Component } from 'react';
 import { ShortcutManager, Shortcut } from './shortcut-manager';
+import { observable } from 'mobx';
 
 const shortcutManager = new ShortcutManager();
 
-interface IWatcher {
-  shortcuts: { [chord: string]: () => void };
-}
-
-interface IProps extends IWatcher {
-  className?: string;
+interface IProps {
+  shortcuts: { [chord: string]: () => void } | Shortcut[];
 }
 
 @observer
-export class KeyboardShortcuts extends Component<IProps> implements IWatcher {
+export class KeyboardShortcuts extends Component<IProps> {
   shortcuts: {};
-  layer: Shortcut[];
+  @observable layer: Shortcut[] = [];
 
   componentDidMount() {
     this.layer = shortcutManager.addLayer(this.props.shortcuts);
   }
 
-  componentDidUpdate() {
-    shortcutManager.updateLayer(this.layer, this.props.shortcuts);
+  componentDidUpdate(props: any) {
+    if (props !== this.props) {
+      this.layer = shortcutManager.updateLayer(
+        this.layer,
+        this.props.shortcuts
+      );
+    }
   }
 
   componentWillUnmount() {
@@ -30,13 +32,6 @@ export class KeyboardShortcuts extends Component<IProps> implements IWatcher {
   }
 
   render() {
-    const { className = '' } = this.props;
-
-    return (
-      <span
-        className={`KeyboardShortcuts ${className}`}
-        style={{ display: 'none' }}
-      />
-    );
+    return <span />;
   }
 }
