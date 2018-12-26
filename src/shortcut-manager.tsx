@@ -7,9 +7,6 @@ import './keyboard-shortcuts.scss';
 
 type ShortcutDefinition = { [chord: string]: () => void };
 
-/** How long should keys be left in the history */
-const HISTORY_TIMEOUT = 1500;
-
 export type Shortcut = {
   chord: string;
   action: Function;
@@ -23,20 +20,39 @@ const MODIFIERS = {
   shiftKey: '+',
 };
 
+class KeyHistory {
+  key: string;
+  time: number;
+
+  constructor(options: Pick<KeyHistory, 'key' | 'time'>) {
+    Object.assign(this, options);
+  }
+
+  toString() {
+    return this.key;
+  }
+}
+
 function normalizeKey(key: string) {
   return [...key.toLowerCase()].sort().join('');
 }
 
-const ShortcutManagerState = observable({
-  layers: [] as Shortcut[][],
-  history: [] as string[],
+const ShortcutManagerStore = observable({
   debugHistory: [] as string[],
+  history: [] as KeyHistory[],
+  layers: [] as Shortcut[][],
+  match: null as Shortcut | null,
+  shortcuts: [] as Shortcut[],
+  modifiers: {
+    altKey: false,
+    metaKey: false,
+    ctrlKey: false,
+    shiftKey: false,
+  },
 });
 
 export class ShortcutManager {
   // #region Fields
-  shortcuts: Shortcut[];
-
   private _debug = false;
   /** The container in which the debug UI will be rendered */
   private container: Element;
@@ -55,6 +71,7 @@ export class ShortcutManager {
 
   constructor(options: { debug?: boolean } = {}) {
     document.body.addEventListener('keydown', this.handleKeyDown);
+    document.body.addEventListener('keyup', this.handleKeyUp);
     this.debug = options.debug || false;
     this.debug = true;
   }
@@ -64,7 +81,7 @@ export class ShortcutManager {
     const layer = Array.isArray(shortcuts)
       ? shortcuts
       : this.convertDefinitionToLayer(shortcuts);
-    ShortcutManagerState.layers.push(layer);
+    ShortcutManagerStore.layers.push(layer);
     this.updateAllShortcuts();
     return layer;
   }
@@ -83,6 +100,12 @@ export class ShortcutManager {
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
+    // Store modifier keys
+    Object.keys(ShortcutManagerStore.modifiers).forEach(
+      (modifier: keyof typeof ShortcutManagerStore.modifiers) => {
+        ShortcutManagerStore.modifiers[modifier] = event[modifier];
+      }
+    );
     // Ignore modifier keys
     if (event.location !== 0) return;
     // Normalize the key
@@ -95,32 +118,37 @@ export class ShortcutManager {
         .join('') + event.key.toLowerCase()
     );
     // Rotate this key into the history
-    ShortcutManagerState.history = ShortcutManagerState.history
-      .slice()
-      .concat(key);
-    ShortcutManagerState.debugHistory = ShortcutManagerState.debugHistory
-      .slice()
-      .concat(key);
-    // Create a timer to kill the character from the history
-    this.timers.push(
-      window.setTimeout(() => {
-        ShortcutManagerState.history = ShortcutManagerState.history.slice(1);
-        ShortcutManagerState.debugHistory = ShortcutManagerState.debugHistory.slice(
-          1
-        );
-      }, HISTORY_TIMEOUT)
-    );
-    const textHistory = ShortcutManagerState.history.slice().join(' ');
+    ShortcutManagerStore.history = ShortcutManagerStore.history
+      .slice(-10)
+      .concat(new KeyHistory({ key, time: Date.now() }));
     // Check the shortcuts
-    const match = this.shortcuts
-      .slice()
-      .reverse()
-      .find(
-        shortcut =>
-          shortcut.action &&
-          shortcut.chord === textHistory.slice(-shortcut.chord.length)
+    const match = ShortcutManagerStore.shortcuts.slice().find(shortcut => {
+      if (!shortcut.action) return false;
+      return (
+        shortcut.chord ===
+        ShortcutManagerStore.history
+          .slice(-shortcut.chord.split(' ').length)
+          .join(' ')
       );
-    if (match) match.action();
+    });
+
+    if (match) {
+      ShortcutManagerStore.match = match;
+      match.action();
+      ShortcutManagerStore.history.push(
+        new KeyHistory({ key: '', time: Date.now() })
+      );
+    } else {
+      ShortcutManagerStore.match = null;
+    }
+  };
+
+  handleKeyUp = () => {
+    Object.keys(ShortcutManagerStore.modifiers).forEach(
+      (modifier: keyof typeof ShortcutManagerStore.modifiers) => {
+        ShortcutManagerStore.modifiers[modifier] = false;
+      }
+    );
   };
 
   private installDebugUi() {
@@ -138,14 +166,16 @@ export class ShortcutManager {
   }
 
   removeLayer(layerToRemove: Shortcut[]) {
-    ShortcutManagerState.layers = ShortcutManagerState.layers.filter(
+    ShortcutManagerStore.layers = ShortcutManagerStore.layers.filter(
       layer => layer === layerToRemove
     );
     this.updateAllShortcuts();
   }
 
   updateAllShortcuts() {
-    this.shortcuts = ShortcutManagerState.layers.flatMap(layer => layer);
+    ShortcutManagerStore.shortcuts = ShortcutManagerStore.layers
+      .flatMap(layer => layer)
+      .reverse();
   }
 
   updateLayer(
@@ -155,7 +185,7 @@ export class ShortcutManager {
     const newLayer = Array.isArray(shortcuts)
       ? shortcuts
       : this.convertDefinitionToLayer(shortcuts);
-    ShortcutManagerState.layers = ShortcutManagerState.layers.map(
+    ShortcutManagerStore.layers = ShortcutManagerStore.layers.map(
       layer => (layer === layerToReplace ? newLayer : layer)
     );
     return newLayer;
@@ -170,55 +200,89 @@ class ShortcutManagerUi extends Component {
       <span className="ShortcutManager ShortcutManager--debug">
         <div className="ShortcutManager__Header">
           Keyboard Shortcuts
-          <svg
-            width="21"
-            height="12"
-            viewBox="0 0 21 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect
-              x="3.5"
-              y="0.5"
-              width="17"
-              height="11"
-              rx="1.5"
-              stroke="#BCD0D2"
-            />
-            <path
-              d="M0.5 5C0.5 4.17157 1.17157 3.5 2 3.5H3.5V8.5H2C1.17157 8.5 0.5 7.82843 0.5 7V5Z"
-              stroke="#BCD0D2"
-            />
-            <rect x="17" y="2" width="2" height="8" fill="#BCD0D2" />
-            <rect x="14" y="2" width="2" height="8" fill="#BCD0D2" />
-            <rect x="11" y="2" width="2" height="8" fill="#BCD0D2" />
-            <rect x="8" y="2" width="2" height="8" fill="#BCD0D2" />
-            <rect x="5" y="2" width="2" height="8" fill="#BCD0D2" />
-          </svg>
+          <div className="ShortcutManager__Modifiers">
+            {Object.entries(ShortcutManagerStore.modifiers).map(
+              ([modifier, pressed]: [
+                keyof typeof ShortcutManagerStore.modifiers,
+                boolean
+              ]) => (
+                <span
+                  className={`ShortcutManager__Modifier ${
+                    pressed ? 'ShortcutManager__Modifier--pressed' : ''
+                  }`}
+                >
+                  {MODIFIERS[modifier]}
+                </span>
+              )
+            )}
+          </div>
         </div>
         <div className="ShortcutManager__Panel">
           <div className="ShortcutManager__History">
             History:
             <div className="ShortcutManager__HistoryKeys">
-              {ShortcutManagerState.history.map((key, i) => (
-                <code key={i}>{key}</code>
+              {ShortcutManagerStore.history.map(key => (
+                <code key={key.time}>{key.key}</code>
               ))}
             </div>
           </div>
-          {ShortcutManagerState.layers.map((layer, i) => (
-            <dl className="ShortcutManager__Layer" key={i}>
-              <header>Layer {String(i).padStart(2, '0')}</header>
-              {(layer || []).map((shortcut, j) => (
-                <Fragment key={shortcut.chord}>
-                  <dt className="Shortcut">{shortcut.chord}</dt>
-                  <dd>
-                    {shortcut.caption || (j < layer.length - 1 ? '|' : '')}
-                  </dd>
-                </Fragment>
-              ))}
-            </dl>
-          ))}
+          {ShortcutManagerStore.layers
+            .slice()
+            .reverse()
+            .map((layer, i) => (
+              <dl className="ShortcutManager__Layer" key={i}>
+                <header>
+                  {`Layer ${String(
+                    ShortcutManagerStore.layers.length - i
+                  ).padStart(2, '0')}`}
+                </header>
+                {(layer || []).map(shortcut => this.renderShortcut(shortcut))}
+              </dl>
+            ))}
         </div>
+      </span>
+    );
+  }
+
+  renderChord(chord: string) {
+    const { history } = ShortcutManagerStore;
+
+    for (let i = history.length; i >= 0; --i) {
+      const historySlice = history.slice(-i).join(' ');
+      const historySliceLength = historySlice.length;
+
+      if (chord.startsWith(historySlice)) {
+        return (
+          <Fragment>
+            <span className="match">{chord.substr(0, historySliceLength)}</span>
+            {chord.substr(historySliceLength)}
+          </Fragment>
+        );
+      }
+    }
+
+    return chord;
+  }
+
+  renderShortcut(shortcut: Shortcut) {
+    const triggeredClass =
+      shortcut === ShortcutManagerStore.match ? 'Shortcut--triggered' : '';
+    const overriddenClass =
+      ShortcutManagerStore.shortcuts.find(
+        other => other.chord === shortcut.chord
+      ) !== shortcut
+        ? 'Shortcut--overridden'
+        : '';
+
+    return (
+      <span
+        className={`Shortcut ${triggeredClass} ${overriddenClass}`}
+        key={shortcut.chord}
+      >
+        <dt className="Shortcut__Chord">
+          {this.renderChord(shortcut.chord.replace(' ', ''))}
+        </dt>
+        <dd className="Shortcut__Definition">{shortcut.caption}</dd>
       </span>
     );
   }

@@ -28,6 +28,7 @@ class Application extends Component {
             'x b': () => (this.value = 'Two'),
             '^x': () => (this.value = 'Three'),
             '^c ^x': () => (this.value = 'Four'),
+            '^z': () => (this.value = 'Five'),
           }}
         />
         <KeyboardShortcuts
@@ -44,17 +45,17 @@ class Application extends Component {
             },
             {
               chord: '^z',
-              action: () => console.log((this.value = 'Three')),
+              action: () => (this.value = 'Three'),
               caption: 'Three',
             },
             {
               chord: '^c ^z',
-              action: () => console.log((this.value = 'Four')),
+              action: () => (this.value = 'Four'),
               caption: 'Four',
             },
             {
               chord: '^z ^v',
-              action: () => console.log((this.value = 'Five')),
+              action: () => (this.value = 'Five'),
               caption: 'Five',
             },
           ]}

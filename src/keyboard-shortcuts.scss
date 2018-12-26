@@ -1,6 +1,15 @@
 .ShortcutManager {
+  --ShortcutManager--black: #21201c;
+  --ShortcutManager--white: #bcd0d2;
+  --ShortcutManager--header: hsl(190, 20%, 35%);
+  --ShortcutManager--panel: hsl(190, 10%, 25%);
+  // --ShortcutManager--border: #99bfbc; // I liked this color, but it was too monochromatic
+  --ShortcutManager--border: #bab551;
+  --ShortcutManager--match: hsl(145, 50%, 60%);
+  --ShortcutManager--description: hsl(200, 10%, 50%);
+
   display: inline-block;
-  background: #21201c;
+  background: var(--ShortcutManager--black);
   border-radius: 3px;
   padding: 10px;
   font-family: monospace;
@@ -8,18 +17,33 @@
 
   &__Header {
     display: grid;
-    background: #425b5f;
+    background: var(--ShortcutManager--header);
     padding: 5px;
     text-decoration: underline;
     text-transform: uppercase;
-    color: #bcd0d2;
+    color: var(--ShortcutManager--white);
     grid-template-columns: 1fr auto;
     grid-column-gap: 10px;
     align-items: center;
+
+    .ShortcutManager__Modifier {
+      display: inline-block;
+      font-size: 10px;
+      margin: 0px 2px;
+      padding: 0px 2px;
+      border: 1px solid var(--ShortcutManager--white);
+      border-radius: 3px;
+      text-decoration: none;
+
+      &--pressed {
+        background: var(--ShortcutManager--white);
+        color: var(--ShortcutManager--black);
+      }
+    }
   }
 
   &__Panel {
-    background: #2a2b28;
+    background: var(--ShortcutManager--panel);
     display: flex;
     flex-direction: column;
     margin-top: 2px;
@@ -27,7 +51,7 @@
 
   &__History {
     display: grid;
-    color: #829997;
+    color: var(--ShortcutManager--white);
     font-size: 10px;
     height: 20px;
     align-items: center;
@@ -38,67 +62,118 @@
       margin: 0px 2px 0px 10px;
       display: flex;
       justify-content: flex-end;
-      background: #1c1b18;
+      background: var(--ShortcutManager--black);
       height: 18px;
       padding: 2px;
       flex: 0 0 100%;
       overflow: hidden;
 
+      @keyframes ShortcutManager--fade-out {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
       code {
         font-size: 12px;
-        color: black;
-        background: #99bfbc;
+        color: var(--ShortcutManager--black);
+        background: var(--ShortcutManager--white);
         border: 0 none;
         border-radius: 0px;
         margin-left: 5px;
+        padding: 1px 5px;
+        animation: ShortcutManager--fade-out 0.5s ease 1.5s forwards;
+
+        &:empty {
+          padding: 1px 0px 1px 1px;
+
+          &:last-of-type {
+            padding: 0px;
+          }
+        }
       }
     }
   }
 
   &__Layer {
-    border: 1px solid #bab551;
+    border: 1px solid var(--ShortcutManager--border);
+    background: var(--ShortcutManager--black);
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 10px 0;
+    margin: 10px 0 0px;
     padding: 0px 10px 0px 0px;
     max-width: 300px;
     flex-wrap: wrap;
 
-    &:last-of-type {
-      margin-bottom: 0px;
-    }
-
     header {
       display: flex;
-      background: #bab551;
+      color: var(--ShortcutManager--black);
+      background: var(--ShortcutManager--border);
       font-weight: bold;
-      height: 21px;
+      height: 20px;
       padding: 0px 10px;
       white-space: nowrap;
       align-items: center;
       border-radius: 0px 0px 3px 0px;
     }
 
-    dt {
-      color: #f2f2f2;
-      margin-left: 10px;
-      white-space: nowrap;
+    .Shortcut {
       height: 20px;
       display: flex;
       align-items: center;
+      padding: 0px 5px;
+      box-sizing: border-box;
+      position: relative;
+      color: var(--ShortcutManager--white);
+      font-size: 14px;
 
-      .match {
-        color: #6fcf97;
-        font-weight: normal;
-        font-style: normal;
+      &__Chord {
+        color: var(--ShortcutManager--white);
+        white-space: pre;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        margin: 0px 5px;
+
+        .match {
+          color: var(--ShortcutManager--match);
+          font-weight: normal;
+          font-style: normal;
+        }
       }
-    }
 
-    dd {
-      white-space: nowrap;
-      color: hsl(200, 15%, 50%);
-      margin-left: 10px;
+      &__Definition {
+        white-space: nowrap;
+        color: var(--ShortcutManager--description);
+        margin: 0px 5px;
+
+        &:empty {
+          display: none;
+        }
+      }
+
+      &--triggered {
+        background: var(--ShortcutManager--description);
+
+        .Shortcut__Chord {
+          color: var(--ShortcutManager--match);
+        }
+        .Shortcut__Definition {
+          color: var(--ShortcutManager--white);
+        }
+      }
+
+      &--overridden {
+        text-decoration: line-through;
+
+        .Shortcut__Chord {
+          color: var(--ShortcutManager--description);
+        }
+      }
     }
   }
 }
