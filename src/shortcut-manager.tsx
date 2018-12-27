@@ -7,25 +7,30 @@ import './keyboard-shortcuts.scss';
 
 type ShortcutDefinition = { [chord: string]: () => void };
 
+let __id = 0;
+const generateId = () => ++__id;
+
 export type Shortcut = {
   chord: string;
   action: Function;
   caption?: string;
+  id?: number;
 };
 
 const MODIFIERS = {
-  altKey: '!',
-  metaKey: '#',
   ctrlKey: '^',
+  altKey: '!',
   shiftKey: '+',
+  metaKey: '#',
 };
 
 class KeyHistory {
   key: string;
   time: number;
 
-  constructor(options: Pick<KeyHistory, 'key' | 'time'>) {
-    Object.assign(this, options);
+  constructor(options: Pick<KeyHistory, 'key'>) {
+    this.key = options.key;
+    this.time = Date.now();
   }
 
   toString() {
@@ -33,21 +38,55 @@ class KeyHistory {
   }
 }
 
+const RE_REMOVE_MODIFIERS = /[!#^+]+/g;
+
 function normalizeKey(key: string) {
-  return [...key.toLowerCase()].sort().join('');
+  const modifiers = Object.values(MODIFIERS)
+    .filter(modifier => key.indexOf(modifier) !== -1)
+    .join('');
+  const characters = key.replace(RE_REMOVE_MODIFIERS, '').toUpperCase();
+  return modifiers + characters;
+}
+
+export class ShortcutLayer {
+  id = generateId();
+  @observable shortcuts: Shortcut[] = [];
+
+  constructor(shortcuts: Shortcut[] | ShortcutDefinition) {
+    if (Array.isArray(shortcuts)) this.shortcuts = shortcuts;
+    else {
+      this.shortcuts = Object.entries(shortcuts).map(([chord, action]) => {
+        return {
+          // Sort the chords to normalize the modifiers
+          chord: chord
+            .split(' ')
+            .map(normalizeKey)
+            .join(' '),
+          action,
+        };
+      });
+    }
+    this.shortcuts.forEach(shortcut => {
+      shortcut.chord = shortcut.chord
+        .split(' ')
+        .map(normalizeKey)
+        .join(' ');
+      if (!shortcut.id) shortcut.id = generateId();
+    });
+  }
 }
 
 type ShortcutManagerStore = {
   debugHistory: string[];
   history: KeyHistory[];
-  layers: Shortcut[][];
+  layers: ShortcutLayer[];
   match: Shortcut | null;
-  shortcuts: Shortcut[];
+  readonly shortcuts: Shortcut[];
   modifiers: {
-    altKey: boolean;
-    metaKey: boolean;
     ctrlKey: boolean;
+    altKey: boolean;
     shiftKey: boolean;
+    metaKey: boolean;
   };
   visible: boolean;
 };
@@ -60,12 +99,17 @@ export class ShortcutManager {
     history: [],
     layers: [],
     match: null,
-    shortcuts: [],
+    get shortcuts() {
+      return this.layers
+        .slice()
+        .reverse()
+        .flatMap((layer: ShortcutLayer) => layer.shortcuts);
+    },
     modifiers: {
-      altKey: false,
-      metaKey: false,
       ctrlKey: false,
+      altKey: false,
       shiftKey: false,
+      metaKey: false,
     },
     visible: false,
   };
@@ -79,6 +123,9 @@ export class ShortcutManager {
   }
   set debug(value: boolean) {
     this.store.visible = value;
+
+    if (this.container && this.container.nextSibling)
+      document.body.appendChild(this.container);
   }
   // #endregion
 
@@ -91,25 +138,9 @@ export class ShortcutManager {
 
   // #region Methods
   addLayer(shortcuts: ShortcutDefinition | Shortcut[]) {
-    const layer = Array.isArray(shortcuts)
-      ? shortcuts
-      : this.convertDefinitionToLayer(shortcuts);
+    const layer = new ShortcutLayer(shortcuts);
     this.store.layers.push(layer);
-    this.updateAllShortcuts();
     return layer;
-  }
-
-  private convertDefinitionToLayer(shortcuts: ShortcutDefinition): Shortcut[] {
-    return Object.entries(shortcuts).map(([chord, action]) => {
-      return {
-        // Sort the chords to normalize the modifiers
-        chord: chord
-          .split(' ')
-          .map(normalizeKey)
-          .join(' '),
-        action,
-      };
-    });
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
@@ -128,12 +159,12 @@ export class ShortcutManager {
           ([modifier, symbol]: [keyof typeof MODIFIERS, string]) =>
             event[modifier] ? symbol : ''
         )
-        .join('') + event.key.toLowerCase()
+        .join('') + event.key
     );
     // Rotate this key into the history
     this.store.history = this.store.history
       .slice(-10)
-      .concat(new KeyHistory({ key, time: Date.now() }));
+      .concat(new KeyHistory({ key }));
     // Check the shortcuts
     const match = this.store.shortcuts.slice().find(shortcut => {
       if (!shortcut.action) return false;
@@ -146,7 +177,7 @@ export class ShortcutManager {
     if (match) {
       this.store.match = match;
       match.action();
-      this.store.history.push(new KeyHistory({ key: '', time: Date.now() }));
+      this.store.history.push(new KeyHistory({ key: '' }));
     } else {
       this.store.match = null;
     }
@@ -170,26 +201,19 @@ export class ShortcutManager {
     render(<ShortcutManagerUi store={this.store} />, this.container);
   }
 
-  removeLayer(layerToRemove: Shortcut[]) {
+  removeLayer(layerToRemove: ShortcutLayer) {
     this.store.layers = this.store.layers.filter(
-      layer => layer === layerToRemove
+      layer => layer.id === layerToRemove.id
     );
-    this.updateAllShortcuts();
-  }
-
-  updateAllShortcuts() {
-    this.store.shortcuts = this.store.layers.flatMap(layer => layer).reverse();
   }
 
   updateLayer(
-    layerToReplace: Shortcut[],
+    layerToReplace: ShortcutLayer,
     shortcuts: ShortcutDefinition | Shortcut[]
   ) {
-    const newLayer = Array.isArray(shortcuts)
-      ? shortcuts
-      : this.convertDefinitionToLayer(shortcuts);
+    const newLayer = new ShortcutLayer(shortcuts);
     this.store.layers = this.store.layers.map(
-      layer => (layer === layerToReplace ? newLayer : layer)
+      layer => (layer.id === layerToReplace.id ? newLayer : layer)
     );
     return newLayer;
   }
@@ -202,7 +226,8 @@ interface IProps {
 
 @observer
 class ShortcutManagerUi extends Component<IProps> {
-  @observable store: ShortcutManagerStore;
+  store: ShortcutManagerStore;
+
   constructor(props: IProps) {
     super(props);
     this.store = props.store;
@@ -253,7 +278,7 @@ class ShortcutManagerUi extends Component<IProps> {
                     '0'
                   )}`}
                 </header>
-                {(layer || []).map(shortcut => this.renderShortcut(shortcut))}
+                {layer.shortcuts.map(shortcut => this.renderShortcut(shortcut))}
               </dl>
             ))}
         </div>
@@ -283,7 +308,13 @@ class ShortcutManagerUi extends Component<IProps> {
 
   renderShortcut(shortcut: Shortcut) {
     const triggeredClass =
-      shortcut === this.store.match ? 'Shortcut--triggered' : '';
+      this.store.match &&
+      // this.store.match.action === shortcut.action &&
+      this.store.match.chord === shortcut.chord &&
+      this.store.match.caption === shortcut.caption
+        ? 'Shortcut--triggered'
+        : '';
+
     const overriddenClass =
       this.store.shortcuts.find(other => other.chord === shortcut.chord) !==
       shortcut
@@ -293,7 +324,7 @@ class ShortcutManagerUi extends Component<IProps> {
     return (
       <span
         className={`Shortcut ${triggeredClass} ${overriddenClass}`}
-        key={shortcut.chord}
+        key={shortcut.id}
       >
         <dt className="Shortcut__Chord">
           {this.renderChord(shortcut.chord.replace(' ', ''))}

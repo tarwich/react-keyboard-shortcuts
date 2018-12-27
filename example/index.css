@@ -1,17 +1,180 @@
-dl {
+@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono');
+
+.Example * {
+  margin: 0;
+  padding: 0;
+}
+
+.Example {
+  --sans-serif: 'Roboto', sans-serif;
+  --monospace: 'Roboto Mono', monospace;
+  font-family: var(--sans-serif);
+  max-width: 500px;
+  margin: auto;
+}
+
+.Example h1 {
+  text-align: center;
+  font-weight: normal;
+  margin: 25px 0px;
+}
+
+.Example h2 {
+  text-align: center;
+  font-weight: normal;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.Example h2:before,
+.Example h2:after {
+  content: ' ';
+  display: inline-block;
+  border-top: 1px solid hsla(220, 20%, 80%);
+}
+
+.Example h2:before {
+  margin-right: 10px;
+}
+.Example h2:after {
+  margin-left: 10px;
+}
+
+.Example__Pinned {
+  background: white;
+  position: sticky;
+  top: -30px;
+  padding: 10px 0 10px 0;
+}
+
+.Example p {
+  margin: 0;
+}
+
+.Example p + p {
+  margin-top: 15px;
+}
+
+.Example__Value {
+  display: grid;
+  white-space: nowrap;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.Example__Value code {
+  font-family: var(--monospace);
+  border: 1px solid hsl(240, 50%, 50%);
+  padding: 5px 10px;
+  min-width: 50px;
+  min-height: calc(1rem + 10px);
+  margin: 0 10px;
+}
+
+p + .Example__Shortcuts {
+  margin: 20px;
+}
+
+.Example__Shortcuts {
+  background: hsl(200, 70%, 90%);
+
   display: grid;
   grid-template-columns: auto 1fr;
-  grid-column-gap: 10px;
-  grid-row-gap: 10px;
+  align-items: center;
+  border-radius: 2px;
 }
 
-dd {
-  margin: 0px;
+.Example__Shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px;
+  height: 30px;
+  font: 14px var(--monospace);
+  color: hsl(220, 90%, 50%);
+  border-right: 1px solid hsl(200, 40%, 80%);
 }
 
-code {
-  border: 1px solid #bbe;
-  border-radius: 3px;
-  background: #ddd;
-  padding: 1px 5px;
+.Example__ShortcutValue {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: hsl(200, 80%, 50%);
+  font-size: 14px;
+  padding: 0 20px;
+  height: 30px;
+  border-left: 1px solid hsl(200, 90%, 99%);
+}
+
+.Example__Key,
+.Example__Shortcuts code {
+  display: inline-flex;
+  border: 1px solid black;
+  border-color: hsl(200, 90%, 99%) hsl(200, 40%, 80%) hsl(200, 40%, 80%)
+    hsl(200, 90%, 99%);
+  font-style: normal;
+  font-family: var(--monospace);
+  margin: 0 0.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  padding: 0 6px;
+  color: hsl(220, 90%, 50%);
+  background: hsl(200, 20%, 80%);
+}
+
+.Example__Button {
+  box-sizing: border-box;
+  display: block;
+  margin: auto;
+  background: hsl(200, 80%, 80%);
+  border: 1px solid black;
+  border-color: hsl(200, 90%, 99%) hsl(200, 40%, 80%) hsl(200, 40%, 80%)
+    hsl(200, 90%, 99%);
+  cursor: pointer;
+  padding: 5px 10px;
+  font: 16px bold var(--sans-serif);
+  color: hsl(200, 50%, 30%);
+  outline: none;
+  border-radius: 2px;
+}
+
+.Example__Button--big {
+  padding: 10px;
+  width: 50%;
+}
+
+.Example__BigButton:focus {
+  border-color: hsl(200, 90%, 70%) hsl(200, 40%, 60%) hsl(200, 40%, 60%)
+    hsl(200, 90%, 70%);
+}
+
+.Example__BigButton:active {
+  background: hsl(200, 90%, 75%);
+}
+
+.CustomShortcuts {
+  text-align: center;
+  margin: 30px auto;
+  border-collapse: separate;
+  border-spacing: 50px 10px;
+}
+
+.CustomShortcuts th {
+  padding: 10px;
+}
+
+.CustomShortcuts__Input {
+  text-align: center;
+  font-family: var(--monospace);
+  border: 1px solid hsl(200, 90%, 40%);
+  border-width: 0 0 1px 0;
+  padding: 5px 10px;
+}
+
+.CustomShortcuts__Input:focus {
+  outline: none;
+  background: hsl(180, 50%, 90%);
 }
