@@ -119,6 +119,11 @@
       white-space: nowrap;
       align-items: center;
       border-radius: 0px 0px 3px 0px;
+
+      // HACK: I can't figure out why this doesn't align right, so I'm forcing
+      // it
+      margin-top: -1px;
+      height: 21px;
     }
 
     .Shortcut {

@@ -2,7 +2,7 @@
 import { observable } from 'mobx';
 import { createElement, Component, Fragment } from 'react';
 import { observer } from 'mobx-react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { render } from 'react-dom';
 import './keyboard-shortcuts.scss';
 
 type ShortcutDefinition = { [chord: string]: () => void };
@@ -37,35 +37,48 @@ function normalizeKey(key: string) {
   return [...key.toLowerCase()].sort().join('');
 }
 
-const ShortcutManagerStore = observable({
-  debugHistory: [] as string[],
-  history: [] as KeyHistory[],
-  layers: [] as Shortcut[][],
-  match: null as Shortcut | null,
-  shortcuts: [] as Shortcut[],
+type ShortcutManagerStore = {
+  debugHistory: string[];
+  history: KeyHistory[];
+  layers: Shortcut[][];
+  match: Shortcut | null;
+  shortcuts: Shortcut[];
   modifiers: {
-    altKey: false,
-    metaKey: false,
-    ctrlKey: false,
-    shiftKey: false,
-  },
-});
+    altKey: boolean;
+    metaKey: boolean;
+    ctrlKey: boolean;
+    shiftKey: boolean;
+  };
+  visible: boolean;
+};
 
 export class ShortcutManager {
   // #region Fields
-  private _debug = false;
+  @observable
+  store: ShortcutManagerStore = {
+    debugHistory: [],
+    history: [],
+    layers: [],
+    match: null,
+    shortcuts: [],
+    modifiers: {
+      altKey: false,
+      metaKey: false,
+      ctrlKey: false,
+      shiftKey: false,
+    },
+    visible: false,
+  };
   /** The container in which the debug UI will be rendered */
   private container: Element;
   /** Timers to clear the history */
   timers: number[] = [];
+  reactComponent: void | Element | Component<any, any, any>;
   get debug() {
-    return this._debug;
+    return this.store.visible;
   }
   set debug(value: boolean) {
-    this._debug = value;
-
-    if (value) this.installDebugUi();
-    else this.removeDebugUi();
+    this.store.visible = value;
   }
   // #endregion
 
@@ -73,7 +86,7 @@ export class ShortcutManager {
     document.body.addEventListener('keydown', this.handleKeyDown);
     document.body.addEventListener('keyup', this.handleKeyUp);
     this.debug = options.debug || false;
-    this.debug = true;
+    this.installDebugUi();
   }
 
   // #region Methods
@@ -81,7 +94,7 @@ export class ShortcutManager {
     const layer = Array.isArray(shortcuts)
       ? shortcuts
       : this.convertDefinitionToLayer(shortcuts);
-    ShortcutManagerStore.layers.push(layer);
+    this.store.layers.push(layer);
     this.updateAllShortcuts();
     return layer;
   }
@@ -101,9 +114,9 @@ export class ShortcutManager {
 
   handleKeyDown = (event: KeyboardEvent) => {
     // Store modifier keys
-    Object.keys(ShortcutManagerStore.modifiers).forEach(
-      (modifier: keyof typeof ShortcutManagerStore.modifiers) => {
-        ShortcutManagerStore.modifiers[modifier] = event[modifier];
+    Object.keys(this.store.modifiers).forEach(
+      (modifier: keyof ShortcutManagerStore['modifiers']) => {
+        this.store.modifiers[modifier] = event[modifier];
       }
     );
     // Ignore modifier keys
@@ -118,35 +131,31 @@ export class ShortcutManager {
         .join('') + event.key.toLowerCase()
     );
     // Rotate this key into the history
-    ShortcutManagerStore.history = ShortcutManagerStore.history
+    this.store.history = this.store.history
       .slice(-10)
       .concat(new KeyHistory({ key, time: Date.now() }));
     // Check the shortcuts
-    const match = ShortcutManagerStore.shortcuts.slice().find(shortcut => {
+    const match = this.store.shortcuts.slice().find(shortcut => {
       if (!shortcut.action) return false;
       return (
         shortcut.chord ===
-        ShortcutManagerStore.history
-          .slice(-shortcut.chord.split(' ').length)
-          .join(' ')
+        this.store.history.slice(-shortcut.chord.split(' ').length).join(' ')
       );
     });
 
     if (match) {
-      ShortcutManagerStore.match = match;
+      this.store.match = match;
       match.action();
-      ShortcutManagerStore.history.push(
-        new KeyHistory({ key: '', time: Date.now() })
-      );
+      this.store.history.push(new KeyHistory({ key: '', time: Date.now() }));
     } else {
-      ShortcutManagerStore.match = null;
+      this.store.match = null;
     }
   };
 
   handleKeyUp = () => {
-    Object.keys(ShortcutManagerStore.modifiers).forEach(
-      (modifier: keyof typeof ShortcutManagerStore.modifiers) => {
-        ShortcutManagerStore.modifiers[modifier] = false;
+    Object.keys(this.store.modifiers).forEach(
+      (modifier: keyof ShortcutManagerStore['modifiers']) => {
+        this.store.modifiers[modifier] = false;
       }
     );
   };
@@ -158,24 +167,18 @@ export class ShortcutManager {
       document.body.appendChild(document.createElement('div'));
     this.container.classList.add('ShortcutManagerContainer');
     // Render the shortcut manager in the container
-    render(<ShortcutManagerUi />, this.container);
-  }
-
-  private removeDebugUi() {
-    if (this.container) unmountComponentAtNode(this.container);
+    render(<ShortcutManagerUi store={this.store} />, this.container);
   }
 
   removeLayer(layerToRemove: Shortcut[]) {
-    ShortcutManagerStore.layers = ShortcutManagerStore.layers.filter(
+    this.store.layers = this.store.layers.filter(
       layer => layer === layerToRemove
     );
     this.updateAllShortcuts();
   }
 
   updateAllShortcuts() {
-    ShortcutManagerStore.shortcuts = ShortcutManagerStore.layers
-      .flatMap(layer => layer)
-      .reverse();
+    this.store.shortcuts = this.store.layers.flatMap(layer => layer).reverse();
   }
 
   updateLayer(
@@ -185,7 +188,7 @@ export class ShortcutManager {
     const newLayer = Array.isArray(shortcuts)
       ? shortcuts
       : this.convertDefinitionToLayer(shortcuts);
-    ShortcutManagerStore.layers = ShortcutManagerStore.layers.map(
+    this.store.layers = this.store.layers.map(
       layer => (layer === layerToReplace ? newLayer : layer)
     );
     return newLayer;
@@ -193,23 +196,36 @@ export class ShortcutManager {
   // #endregion
 }
 
+interface IProps {
+  store: ShortcutManagerStore;
+}
+
 @observer
-class ShortcutManagerUi extends Component {
+class ShortcutManagerUi extends Component<IProps> {
+  @observable store: ShortcutManagerStore;
+  constructor(props: IProps) {
+    super(props);
+    this.store = props.store;
+  }
+
   render() {
+    if (!this.store.visible) return null;
+
     return (
       <span className="ShortcutManager ShortcutManager--debug">
         <div className="ShortcutManager__Header">
           Keyboard Shortcuts
           <div className="ShortcutManager__Modifiers">
-            {Object.entries(ShortcutManagerStore.modifiers).map(
+            {Object.entries(this.store.modifiers).map(
               ([modifier, pressed]: [
-                keyof typeof ShortcutManagerStore.modifiers,
+                keyof ShortcutManagerStore['modifiers'],
                 boolean
               ]) => (
                 <span
                   className={`ShortcutManager__Modifier ${
                     pressed ? 'ShortcutManager__Modifier--pressed' : ''
                   }`}
+                  key={modifier}
                 >
                   {MODIFIERS[modifier]}
                 </span>
@@ -221,20 +237,21 @@ class ShortcutManagerUi extends Component {
           <div className="ShortcutManager__History">
             History:
             <div className="ShortcutManager__HistoryKeys">
-              {ShortcutManagerStore.history.map(key => (
+              {this.store.history.map(key => (
                 <code key={key.time}>{key.key}</code>
               ))}
             </div>
           </div>
-          {ShortcutManagerStore.layers
+          {this.store.layers
             .slice()
             .reverse()
             .map((layer, i) => (
               <dl className="ShortcutManager__Layer" key={i}>
                 <header>
-                  {`Layer ${String(
-                    ShortcutManagerStore.layers.length - i
-                  ).padStart(2, '0')}`}
+                  {`Layer ${String(this.store.layers.length - i).padStart(
+                    2,
+                    '0'
+                  )}`}
                 </header>
                 {(layer || []).map(shortcut => this.renderShortcut(shortcut))}
               </dl>
@@ -245,7 +262,7 @@ class ShortcutManagerUi extends Component {
   }
 
   renderChord(chord: string) {
-    const { history } = ShortcutManagerStore;
+    const { history } = this.store;
 
     for (let i = history.length; i >= 0; --i) {
       const historySlice = history.slice(-i).join(' ');
@@ -266,11 +283,10 @@ class ShortcutManagerUi extends Component {
 
   renderShortcut(shortcut: Shortcut) {
     const triggeredClass =
-      shortcut === ShortcutManagerStore.match ? 'Shortcut--triggered' : '';
+      shortcut === this.store.match ? 'Shortcut--triggered' : '';
     const overriddenClass =
-      ShortcutManagerStore.shortcuts.find(
-        other => other.chord === shortcut.chord
-      ) !== shortcut
+      this.store.shortcuts.find(other => other.chord === shortcut.chord) !==
+      shortcut
         ? 'Shortcut--overridden'
         : '';
 

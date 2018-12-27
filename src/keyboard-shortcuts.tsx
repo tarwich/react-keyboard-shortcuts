@@ -6,6 +6,7 @@ import { observable } from 'mobx';
 const shortcutManager = new ShortcutManager();
 
 interface IProps {
+  debug?: boolean;
   shortcuts: { [chord: string]: () => void } | Shortcut[];
 }
 
@@ -15,10 +16,12 @@ export class KeyboardShortcuts extends Component<IProps> {
   @observable layer: Shortcut[] = [];
 
   componentDidMount() {
+    shortcutManager.debug = this.props.debug || false;
     this.layer = shortcutManager.addLayer(this.props.shortcuts);
   }
 
   componentDidUpdate(props: any) {
+    shortcutManager.debug = this.props.debug || false;
     if (props !== this.props) {
       this.layer = shortcutManager.updateLayer(
         this.layer,

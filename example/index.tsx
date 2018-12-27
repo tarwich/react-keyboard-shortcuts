@@ -12,11 +12,7 @@ root.id = 'root';
 
 @observer
 class Application extends Component {
-  @observable
-  keys = {
-    ab: 'NO',
-    ac: 'NO',
-  };
+  @observable debugger = false;
   @observable value = '';
 
   render() {
@@ -32,6 +28,7 @@ class Application extends Component {
           }}
         />
         <KeyboardShortcuts
+          debug={this.debugger}
           shortcuts={[
             {
               chord: 'z a',
@@ -80,6 +77,13 @@ class Application extends Component {
           </dt>
           <dd>Four</dd>
         </dl>
+        <button
+          onClick={() => {
+            this.debugger = !this.debugger;
+          }}
+        >
+          {this.debugger ? 'Disable' : 'Enable'} Debugger
+        </button>
       </div>
     );
   }
