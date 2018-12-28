@@ -144,6 +144,9 @@ export class ShortcutManager {
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
+    // Ignore when in a textfield
+    if (event.target && 'value' in event.target) return;
+
     // Store modifier keys
     Object.keys(this.store.modifiers).forEach(
       (modifier: keyof ShortcutManagerStore['modifiers']) => {
