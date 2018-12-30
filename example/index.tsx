@@ -1,7 +1,8 @@
 import { createElement, Component, ChangeEvent } from 'react';
 import { render } from 'react-dom';
 import './index.css';
-import { KeyboardShortcuts } from '../src/keyboard-shortcuts';
+import { HotkeyLayer } from '../src/hotkey-layer';
+import { HotkeyDebugger } from '../src';
 
 const root =
   document.querySelector('#root') ||
@@ -19,7 +20,7 @@ interface IState {
 class Application extends Component<{}, IState> {
   state: IState = {
     value: '',
-    debug: false,
+    debug: true,
     shortcuts: [],
   };
 
@@ -87,7 +88,7 @@ class Application extends Component<{}, IState> {
           </code>
           is overridden, which you will see later)
         </p>
-        <KeyboardShortcuts
+        <HotkeyLayer
           shortcuts={{
             // This is a basic chord
             'X A': this.setValue('X then A'),
@@ -128,7 +129,7 @@ class Application extends Component<{}, IState> {
           You can also define shortcuts with a description in case later you
           want to show a legend programmatically
         */}
-        <KeyboardShortcuts
+        <HotkeyLayer
           shortcuts={[
             // Simple shortcut with description
             {
@@ -177,6 +178,7 @@ class Application extends Component<{}, IState> {
           then you can open the debug window, press the key combination, and
           copy those out into code.
         </p>
+        {debug ? <HotkeyDebugger /> : null}
 
         {/*************************************************************
           Layer 3
@@ -191,7 +193,7 @@ class Application extends Component<{}, IState> {
         {/*
           These are dynamic keyboard shortcuts
         */}
-        <KeyboardShortcuts
+        <HotkeyLayer
           shortcuts={shortcuts.map(shortcut => ({
             chord: shortcut.chord,
             caption: shortcut.caption,

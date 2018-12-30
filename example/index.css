@@ -178,3 +178,9 @@ p + .Example__Shortcuts {
   outline: none;
   background: hsl(180, 50%, 90%);
 }
+
+.Example .ShortcutManager {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
