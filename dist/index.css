@@ -1,0 +1,159 @@
+.ShortcutManager {
+  --ShortcutManager--black: #21201c;
+  --ShortcutManager--white: #bcd0d2;
+  --ShortcutManager--header: hsl(190, 20%, 35%);
+  --ShortcutManager--panel: hsl(190, 10%, 25%);
+  --ShortcutManager--border: #bab551;
+  --ShortcutManager--match: hsl(145, 50%, 60%);
+  --ShortcutManager--description: hsl(200, 10%, 50%);
+  display: block;
+  background: var(--ShortcutManager--black);
+  border-radius: 3px;
+  padding: 10px;
+  font-family: monospace;
+  width: 300px;
+}
+.ShortcutManager__Header {
+  display: grid;
+  background: var(--ShortcutManager--header);
+  padding: 5px;
+  text-decoration: underline;
+  text-transform: uppercase;
+  color: var(--ShortcutManager--white);
+  grid-template-columns: 1fr auto;
+  grid-column-gap: 10px;
+  align-items: center;
+}
+.ShortcutManager__Header .ShortcutManager__Modifier {
+  display: inline-block;
+  font-size: 10px;
+  margin: 0px 2px;
+  padding: 0px 2px;
+  border: 1px solid var(--ShortcutManager--white);
+  border-radius: 3px;
+  text-decoration: none;
+}
+.ShortcutManager__Header .ShortcutManager__Modifier--pressed {
+  background: var(--ShortcutManager--white);
+  color: var(--ShortcutManager--black);
+}
+.ShortcutManager__Panel {
+  background: var(--ShortcutManager--panel);
+  display: flex;
+  flex-direction: column;
+  margin-top: 2px;
+}
+.ShortcutManager__History {
+  display: grid;
+  color: var(--ShortcutManager--white);
+  font-size: 10px;
+  height: 20px;
+  align-items: center;
+  grid-template-columns: auto 1fr;
+  padding-left: 5px;
+}
+.ShortcutManager__HistoryKeys {
+  margin: 0px 2px 0px 10px;
+  display: flex;
+  justify-content: flex-end;
+  background: var(--ShortcutManager--black);
+  height: 18px;
+  padding: 2px;
+  flex: 0 0 100%;
+  overflow: hidden;
+}
+@keyframes ShortcutManager--fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.ShortcutManager__HistoryKeys code {
+  font-size: 12px;
+  color: var(--ShortcutManager--black);
+  background: var(--ShortcutManager--white);
+  border: 0 none;
+  border-radius: 0px;
+  margin-left: 5px;
+  padding: 1px 5px;
+  animation: ShortcutManager--fade-out 0.5s ease 1.5s forwards;
+}
+.ShortcutManager__HistoryKeys code:empty {
+  padding: 1px 0px 1px 1px;
+  background: var(--ShortcutManager--description);
+}
+.ShortcutManager__HistoryKeys code:empty:last-of-type {
+  padding: 0px;
+}
+.ShortcutManager__Layer {
+  border: 1px solid var(--ShortcutManager--border);
+  background: var(--ShortcutManager--black);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px 0 0px;
+  padding: 0px 10px 0px 0px;
+  max-width: 300px;
+  flex-wrap: wrap;
+}
+.ShortcutManager__Layer header {
+  display: flex;
+  color: var(--ShortcutManager--black);
+  background: var(--ShortcutManager--border);
+  font-weight: bold;
+  height: 20px;
+  padding: 0px 10px;
+  white-space: nowrap;
+  align-items: center;
+  border-radius: 0px 0px 3px 0px;
+  margin-top: -1px;
+  height: 21px;
+}
+.ShortcutManager__Layer .Shortcut {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  padding: 0px 5px;
+  box-sizing: border-box;
+  position: relative;
+  color: var(--ShortcutManager--white);
+  font-size: 14px;
+}
+.ShortcutManager__Layer .Shortcut__Chord {
+  color: var(--ShortcutManager--white);
+  white-space: pre;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  margin: 0px 5px;
+}
+.ShortcutManager__Layer .Shortcut__Chord .match {
+  color: var(--ShortcutManager--match);
+  font-weight: normal;
+  font-style: normal;
+}
+.ShortcutManager__Layer .Shortcut__Definition {
+  white-space: nowrap;
+  color: var(--ShortcutManager--description);
+  margin: 0px 5px;
+}
+.ShortcutManager__Layer .Shortcut__Definition:empty {
+  display: none;
+}
+.ShortcutManager__Layer .Shortcut--triggered {
+  background: var(--ShortcutManager--description);
+}
+.ShortcutManager__Layer .Shortcut--triggered .Shortcut__Chord {
+  color: var(--ShortcutManager--match);
+}
+.ShortcutManager__Layer .Shortcut--triggered .Shortcut__Definition {
+  color: var(--ShortcutManager--white);
+}
+.ShortcutManager__Layer .Shortcut--overridden {
+  text-decoration: line-through;
+}
+.ShortcutManager__Layer .Shortcut--overridden .Shortcut__Chord {
+  color: var(--ShortcutManager--description);
+}

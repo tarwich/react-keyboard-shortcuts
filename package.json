@@ -2,7 +2,8 @@
   "name": "react-keyboard-shortcuts",
   "version": "1.0.0",
   "description": "Layered keyboard shortcuts module for React",
-  "main": "index.js",
+  "main": "dist",
+  "types": "dist",
   "dependencies": {},
   "devDependencies": {
     "@types/react-dom": "16.0.11",
