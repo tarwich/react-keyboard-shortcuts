@@ -1,5 +1,7 @@
 const commander = require('commander');
 const Bundler = require('parcel-bundler');
+const npm = require('npm');
+const { promisify } = require('util');
 
 const { env } = process;
 
@@ -13,17 +15,29 @@ const OPTIONS = commander
 if (OPTIONS.production) env.NODE_ENV = 'production';
 
 async function runBundle() {
-  const bundler = new Bundler('./example/index.html', {
-    outDir: './.tmp/build',
-    cacheDir: './.tmp/.cache',
-    target: 'browser',
-    watch: true,
-  });
+  if (OPTIONS.build) {
+    const bundler = new Bundler('./src/index.ts', {
+      outDir: './dist',
+      cache: false,
+      target: 'browser',
+      watch: false,
+    });
 
-  if (OPTIONS.build)
-    return bundler.bundle(OPTIONS.port);
+    await promisify(npm.load)();
+    await promisify(npm.commands['run-script'])(['generate-definitions']);
+    await bundler.bundle();
+  }
 
-  return bundler.serve(OPTIONS.port);
+  else {
+    const bundler = new Bundler('./example/index.html', {
+      outDir: './.tmp/build',
+      cacheDir: './.tmp/.cache',
+      target: 'browser',
+      watch: true,
+    });
+
+    return bundler.serve(OPTIONS.port);
+  }
 }
 
 runBundle().catch(console.error);

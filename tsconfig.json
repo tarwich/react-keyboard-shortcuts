@@ -3,13 +3,11 @@
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "jsx": "react",
-    "jsxFactory": "createElement",
     "moduleResolution": "node",
     "module": "commonjs",
     "target": "esnext",
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "noEmit": true,
     "noUnusedLocals": true
   },
   "exclude": [

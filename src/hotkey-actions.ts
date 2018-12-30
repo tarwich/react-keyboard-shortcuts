@@ -1,4 +1,3 @@
-import { action } from 'mobx';
 import { ShortcutDefinition } from './shortcut-definition';
 import { Shortcut } from './shortcut';
 import { ShortcutLayer } from './shortcut-layer';
@@ -9,7 +8,6 @@ import { normalizeKey, MODIFIERS } from './normalizeKey';
 let listenersInstalled = false;
 
 export class HotkeyActions {
-  @action
   static addLayer(shortcuts: ShortcutDefinition | Shortcut[]): ShortcutLayer {
     const layer = new ShortcutLayer(shortcuts);
     HotkeyStore.layers.push(layer);
@@ -67,7 +65,6 @@ export class HotkeyActions {
     );
   };
 
-  @action
   static installEventListeners() {
     if (!listenersInstalled) {
       listenersInstalled = true;
@@ -76,14 +73,12 @@ export class HotkeyActions {
     }
   }
 
-  @action
   static removeLayer(layerToRemove: ShortcutLayer) {
     HotkeyStore.layers = HotkeyStore.layers.filter(
       layer => layer.id === layerToRemove.id
     );
   }
 
-  @action
   static updateLayer(
     layerToReplace: ShortcutLayer,
     shortcuts: ShortcutDefinition | Shortcut[]

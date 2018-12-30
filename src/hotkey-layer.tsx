@@ -1,5 +1,5 @@
+import * as React from 'react';
 import { observer } from 'mobx-react';
-import { Component } from 'react';
 import { Shortcut } from './shortcut';
 import { ShortcutLayer } from './shortcut-layer';
 import { observable } from 'mobx';
@@ -13,7 +13,7 @@ interface IProps {
 
 // FIXME: I don't think this needs to be an @observer
 @observer
-export class HotkeyLayer extends Component<IProps> {
+export class HotkeyLayer extends React.Component<IProps> {
   shortcuts: {};
   // FIXME: I don't think this needs to be @observable
   @observable layer: ShortcutLayer;

@@ -1,5 +1,4 @@
-/** @jsx createElement */
-import { createElement, Component, Fragment, MouseEvent } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 import './keyboard-shortcuts.scss';
 import { HotkeyStore } from './hotkey-store';
@@ -8,8 +7,8 @@ import { MODIFIERS } from './normalizeKey';
 import { toJS } from 'mobx';
 
 @observer
-export class HotkeyDebugger extends Component {
-  handleClickHeader = (event: MouseEvent) => {
+export class HotkeyDebugger extends React.Component {
+  handleClickHeader = (event: React.MouseEvent) => {
     if (event.altKey) console.log(toJS(HotkeyStore));
   };
 
@@ -76,10 +75,10 @@ export class HotkeyDebugger extends Component {
 
       if (chord.startsWith(historySlice)) {
         return (
-          <Fragment>
+          <React.Fragment>
             <span className="match">{chord.substr(0, historySliceLength)}</span>
             {chord.substr(historySliceLength)}
-          </Fragment>
+          </React.Fragment>
         );
       }
     }

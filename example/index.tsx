@@ -1,4 +1,4 @@
-import { createElement, Component, ChangeEvent } from 'react';
+import * as React from 'react';
 import { render } from 'react-dom';
 import './index.css';
 import { HotkeyLayer } from '../src/hotkey-layer';
@@ -17,7 +17,7 @@ interface IState {
   shortcuts: Shortcut[];
 }
 
-class Application extends Component<{}, IState> {
+class Application extends React.Component<{}, IState> {
   state: IState = {
     value: '',
     debug: true,
@@ -33,7 +33,7 @@ class Application extends Component<{}, IState> {
   };
 
   updateShortcut = (index: number, field: keyof IState['shortcuts'][0]) => (
-    event: ChangeEvent
+    event: React.ChangeEvent
   ) => {
     let { value } = event.target as HTMLInputElement;
     const { shortcuts } = this.state;
