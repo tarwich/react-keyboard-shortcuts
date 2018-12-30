@@ -20,7 +20,7 @@
   },
   "scripts": {
     "dev": "node scripts/run",
-    "generate-definitions": "tsc --emitDeclarationOnly -p src"
+    "generate-definitions": "tsc -p tsconfig.build.json"
   },
   "repository": {
     "type": "git",

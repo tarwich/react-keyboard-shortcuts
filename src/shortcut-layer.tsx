@@ -1,7 +1,7 @@
 import { observable } from 'mobx';
 import { ShortcutDefinition } from './shortcut-definition';
 import { Shortcut } from './shortcut';
-import { normalizeKey } from './normalizeKey';
+import { normalizeKey } from './normalize-key';
 
 let nextId = 0;
 const generateId = () => ++nextId;

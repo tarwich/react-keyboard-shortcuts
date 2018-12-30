@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 import './index.css';
-import { HotkeyLayer } from '../src/hotkey-layer';
-import { HotkeyDebugger } from '../src';
+import { HotkeyLayer, HotkeyDebugger } from '../src';
 
 const root =
   document.querySelector('#root') ||
@@ -20,7 +19,7 @@ interface IState {
 class Application extends React.Component<{}, IState> {
   state: IState = {
     value: '',
-    debug: true,
+    debug: false,
     shortcuts: [],
   };
 

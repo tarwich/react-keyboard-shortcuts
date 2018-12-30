@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import './keyboard-shortcuts.scss';
 import { HotkeyStore } from './hotkey-store';
 import { Shortcut } from './shortcut';
-import { MODIFIERS } from './normalizeKey';
+import { MODIFIERS } from './normalize-key';
 import { toJS } from 'mobx';
 
 @observer

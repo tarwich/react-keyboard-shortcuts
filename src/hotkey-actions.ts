@@ -3,7 +3,7 @@ import { Shortcut } from './shortcut';
 import { ShortcutLayer } from './shortcut-layer';
 import { HotkeyStore } from './hotkey-store';
 import { KeyHistory } from './key-history';
-import { normalizeKey, MODIFIERS } from './normalizeKey';
+import { normalizeKey, MODIFIERS } from './normalize-key';
 
 let listenersInstalled = false;
 
