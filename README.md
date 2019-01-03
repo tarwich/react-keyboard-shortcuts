@@ -84,7 +84,7 @@ In order to make chords, use a space to separate keys. Here are some examples:
 With chords, you can even do "cheat codes"
 
 ### The Doom cheat code
-`I D D K D`
+`I D D Q D`
 
 ### Konami cheat code
 `ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight B A` Konami!
