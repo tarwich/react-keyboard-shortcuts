@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "typescript": "index.ts",
+  "dependencies": {},
   "devDependencies": {
     "@types/lodash": "4.14.136",
     "@types/react-dom": "16.0.11",
