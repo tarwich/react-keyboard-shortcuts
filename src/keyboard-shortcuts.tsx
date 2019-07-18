@@ -1,8 +1,6 @@
-import { observer } from 'mobx-react';
+import { isEqual } from 'lodash';
 import { Component } from 'react';
 import { ShortcutManager, ShortcutLayer, Shortcut } from './shortcut-manager';
-import { observable } from 'mobx';
-import { comparer } from 'mobx';
 
 const shortcutManager = new ShortcutManager();
 
@@ -11,20 +9,21 @@ interface IProps {
   shortcuts: { [chord: string]: () => void } | Shortcut[];
 }
 
-@observer
 export class KeyboardShortcuts extends Component<IProps> {
-  shortcuts: {};
-  @observable layer: ShortcutLayer;
+  shortcuts: Shortcut;
+  layer: ShortcutLayer | null = null;
 
-  componentDidMount() {
-    shortcutManager.debug = this.props.debug || false;
+  constructor(props: IProps) {
+    super(props);
+
+    shortcutManager.debug = props.debug || false;
     this.layer = shortcutManager.addLayer(this.props.shortcuts);
   }
 
   componentDidUpdate(props: IProps) {
     shortcutManager.debug = this.props.debug || false;
 
-    if (!comparer.structural(props.shortcuts, this.props.shortcuts)) {
+    if (this.layer && !isEqual(props.shortcuts, this.props.shortcuts)) {
       this.layer = shortcutManager.updateLayer(
         this.layer,
         this.props.shortcuts
@@ -33,7 +32,9 @@ export class KeyboardShortcuts extends Component<IProps> {
   }
 
   componentWillUnmount() {
-    shortcutManager.removeLayer(this.layer);
+    if (this.layer) {
+      shortcutManager.removeLayer(this.layer);
+    }
   }
 
   render() {

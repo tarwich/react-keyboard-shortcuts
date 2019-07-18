@@ -1,7 +1,4 @@
-/** @jsx createElement */
-import { observable } from 'mobx';
 import { createElement, Component, Fragment } from 'react';
-import { observer } from 'mobx-react';
 import { render } from 'react-dom';
 import './keyboard-shortcuts.scss';
 
@@ -9,6 +6,8 @@ type ShortcutDefinition = { [chord: string]: () => void };
 
 let __id = 0;
 const generateId = () => ++__id;
+
+let installDebug: ShortcutManagerUi | null = null;
 
 export type Shortcut = {
   chord: string;
@@ -50,7 +49,7 @@ function normalizeKey(key: string) {
 
 export class ShortcutLayer {
   id = generateId();
-  @observable shortcuts: Shortcut[] = [];
+  shortcuts: Shortcut[] = [];
 
   constructor(shortcuts: Shortcut[] | ShortcutDefinition) {
     if (Array.isArray(shortcuts)) this.shortcuts = shortcuts;
@@ -93,7 +92,6 @@ type ShortcutManagerStore = {
 
 export class ShortcutManager {
   // #region Fields
-  @observable
   store: ShortcutManagerStore = {
     debugHistory: [],
     history: [],
@@ -140,6 +138,9 @@ export class ShortcutManager {
   addLayer(shortcuts: ShortcutDefinition | Shortcut[]) {
     const layer = new ShortcutLayer(shortcuts);
     this.store.layers.push(layer);
+
+    installDebug && installDebug.forceUpdate();
+
     return layer;
   }
 
@@ -158,9 +159,8 @@ export class ShortcutManager {
     // Normalize the key
     const key = normalizeKey(
       Object.entries(MODIFIERS)
-        .map(
-          ([modifier, symbol]: [keyof typeof MODIFIERS, string]) =>
-            event[modifier] ? symbol : ''
+        .map(([modifier, symbol]: [keyof typeof MODIFIERS, string]) =>
+          event[modifier] ? symbol : ''
         )
         .join('') + event.key
     );
@@ -184,6 +184,8 @@ export class ShortcutManager {
     } else {
       this.store.match = null;
     }
+
+    installDebug && installDebug.forceUpdate();
   };
 
   handleKeyUp = () => {
@@ -192,6 +194,8 @@ export class ShortcutManager {
         this.store.modifiers[modifier] = false;
       }
     );
+
+    installDebug && installDebug.forceUpdate();
   };
 
   private installDebugUi() {
@@ -201,13 +205,21 @@ export class ShortcutManager {
       document.body.appendChild(document.createElement('div'));
     this.container.classList.add('ShortcutManagerContainer');
     // Render the shortcut manager in the container
-    render(<ShortcutManagerUi store={this.store} />, this.container);
+    render(
+      <ShortcutManagerUi
+        store={this.store}
+        ref={ref => (installDebug = ref)}
+      />,
+      this.container
+    );
   }
 
   removeLayer(layerToRemove: ShortcutLayer) {
     this.store.layers = this.store.layers.filter(
-      layer => layer.id === layerToRemove.id
+      layer => layer.id !== layerToRemove.id
     );
+
+    installDebug && installDebug.forceUpdate();
   }
 
   updateLayer(
@@ -215,9 +227,12 @@ export class ShortcutManager {
     shortcuts: ShortcutDefinition | Shortcut[]
   ) {
     const newLayer = new ShortcutLayer(shortcuts);
-    this.store.layers = this.store.layers.map(
-      layer => (layer.id === layerToReplace.id ? newLayer : layer)
+    this.store.layers = this.store.layers.map(layer =>
+      layer.id === layerToReplace.id ? newLayer : layer
     );
+
+    installDebug && installDebug.forceUpdate();
+
     return newLayer;
   }
   // #endregion
@@ -227,7 +242,6 @@ interface IProps {
   store: ShortcutManagerStore;
 }
 
-@observer
 class ShortcutManagerUi extends Component<IProps> {
   store: ShortcutManagerStore;
 
