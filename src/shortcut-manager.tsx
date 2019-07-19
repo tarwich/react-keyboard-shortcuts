@@ -1,4 +1,5 @@
-import { createElement, Component, Fragment } from 'react';
+import * as React from 'react';
+import { Component, Fragment } from 'react';
 import { render } from 'react-dom';
 import './keyboard-shortcuts.scss';
 
@@ -14,6 +15,7 @@ export type Shortcut = {
   action: Function;
   caption?: string;
   id?: number;
+  textFieldEnabled?: boolean;
 };
 
 const MODIFIERS = {
@@ -145,8 +147,7 @@ export class ShortcutManager {
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
-    // Ignore when in a textfield
-    if (event.target && 'value' in event.target) return;
+    const isTextField = event.target && 'value' in event.target;
 
     // Store modifier keys
     Object.keys(this.store.modifiers).forEach(
@@ -183,8 +184,21 @@ export class ShortcutManager {
     });
 
     if (match) {
+      // Only do the action if one of the following is true
+      // 1. We are not in a text field
+      // 2. textFieldEnabled is enabled for this shortcut
+      // 3. textFieldEnabled is not false and the action is being
+      //    triggered by the escape key or a modified key combo
+      const shouldAction =
+        !isTextField ||
+        match.textFieldEnabled ||
+        (match.textFieldEnabled !== false &&
+          (match.chord === 'ESCAPE' || match.chord.match(RE_REMOVE_MODIFIERS)));
+
       this.store.match = match;
-      match.action();
+      if (shouldAction) {
+        match.action();
+      }
       this.store.history.push(new KeyHistory({ key: '' }));
     } else {
       this.store.match = null;
@@ -285,7 +299,7 @@ class ShortcutManagerUi extends Component<IProps> {
             History:
             <div className="ShortcutManager__HistoryKeys">
               {this.store.history.map(key => (
-                <code key={key.time}>{key.key}</code>
+                <code key={`${key.key}-${key.time}`}>{key.key}</code>
               ))}
             </div>
           </div>
