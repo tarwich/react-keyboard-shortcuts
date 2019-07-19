@@ -155,7 +155,12 @@ export class ShortcutManager {
       }
     );
     // Ignore modifier keys
-    if (event.location !== 0) return;
+    if (event.location !== 0) {
+      installDebug && installDebug.forceUpdate();
+
+      return;
+    }
+
     // Normalize the key
     const key = normalizeKey(
       Object.entries(MODIFIERS)
