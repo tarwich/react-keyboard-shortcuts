@@ -10,7 +10,6 @@ interface IProps {
 }
 
 export class KeyboardShortcuts extends Component<IProps> {
-  shortcuts: Shortcut;
   layer: ShortcutLayer | null = null;
 
   constructor(props: IProps) {
