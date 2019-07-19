@@ -2,7 +2,6 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "jsx": "react",
-    "jsxFactory": "createElement",
     "moduleResolution": "node",
     "module": "commonjs",
     "target": "esnext",

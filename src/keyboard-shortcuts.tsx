@@ -1,4 +1,5 @@
 import { isEqual } from 'lodash';
+import * as React from 'react';
 import { Component } from 'react';
 import { ShortcutManager, ShortcutLayer, Shortcut } from './shortcut-manager';
 
