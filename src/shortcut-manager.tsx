@@ -16,6 +16,7 @@ export type Shortcut = {
   caption?: string;
   id?: number;
   textFieldEnabled?: boolean;
+  preventDefault?: boolean;
 };
 
 const MODIFIERS = {
@@ -197,6 +198,9 @@ export class ShortcutManager {
 
       this.store.match = match;
       if (shouldAction) {
+        if (match.preventDefault !== false) {
+          event.preventDefault();
+        }
         match.action();
       }
       this.store.history.push(new KeyHistory({ key: '' }));
