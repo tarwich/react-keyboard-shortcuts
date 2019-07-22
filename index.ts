@@ -1,2 +1,2 @@
-export * from './src/keyboard-shortcuts';
-export * from './src/shortcut-manager';
+export * from "./src/keyboard-shortcuts";
+export * from "./src/shortcut-manager";

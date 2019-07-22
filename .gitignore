@@ -4,6 +4,7 @@ yarn.lock
 package-lock.json
 .cache
 .tmp
+dist
 
 # OS Garbage
 .DS_Store

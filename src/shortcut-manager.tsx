@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Component, Fragment } from 'react';
-import { render } from 'react-dom';
-import './keyboard-shortcuts.scss';
+import * as React from "react";
+import { Component, Fragment } from "react";
+import { render } from "react-dom";
+import "./keyboard-shortcuts.scss";
 
 type ShortcutDefinition = { [chord: string]: () => void };
 
@@ -20,17 +20,17 @@ export type Shortcut = {
 };
 
 const MODIFIERS = {
-  ctrlKey: '^',
-  altKey: '!',
-  shiftKey: '+',
-  metaKey: '#',
+  ctrlKey: "^",
+  altKey: "!",
+  shiftKey: "+",
+  metaKey: "#"
 };
 
 class KeyHistory {
   key: string;
   time: number;
 
-  constructor(options: Pick<KeyHistory, 'key'>) {
+  constructor(options: Pick<KeyHistory, "key">) {
     this.key = options.key;
     this.time = Date.now();
   }
@@ -45,8 +45,8 @@ const RE_REMOVE_MODIFIERS = /[!#^+]+/g;
 function normalizeKey(key: string) {
   const modifiers = Object.values(MODIFIERS)
     .filter(modifier => key.indexOf(modifier) !== -1)
-    .join('');
-  const characters = key.replace(RE_REMOVE_MODIFIERS, '').toUpperCase();
+    .join("");
+  const characters = key.replace(RE_REMOVE_MODIFIERS, "").toUpperCase();
   return modifiers + characters;
 }
 
@@ -61,18 +61,18 @@ export class ShortcutLayer {
         return {
           // Sort the chords to normalize the modifiers
           chord: chord
-            .split(' ')
+            .split(" ")
             .map(normalizeKey)
-            .join(' '),
-          action,
+            .join(" "),
+          action
         };
       });
     }
     this.shortcuts.forEach(shortcut => {
       shortcut.chord = shortcut.chord
-        .split(' ')
+        .split(" ")
         .map(normalizeKey)
-        .join(' ');
+        .join(" ");
       if (!shortcut.id) shortcut.id = generateId();
     });
   }
@@ -110,9 +110,9 @@ export class ShortcutManager {
       ctrlKey: false,
       altKey: false,
       shiftKey: false,
-      metaKey: false,
+      metaKey: false
     },
-    visible: false,
+    visible: false
   };
   /** The container in which the debug UI will be rendered */
   private container: Element;
@@ -131,8 +131,8 @@ export class ShortcutManager {
   // #endregion
 
   constructor(options: { debug?: boolean } = {}) {
-    document.body.addEventListener('keydown', this.handleKeyDown);
-    document.body.addEventListener('keyup', this.handleKeyUp);
+    document.body.addEventListener("keydown", this.handleKeyDown);
+    document.body.addEventListener("keyup", this.handleKeyUp);
     this.debug = options.debug || false;
     this.installDebugUi();
   }
@@ -148,11 +148,11 @@ export class ShortcutManager {
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
-    const isTextField = event.target && 'value' in event.target;
+    const isTextField = event.target && "value" in event.target;
 
     // Store modifier keys
     Object.keys(this.store.modifiers).forEach(
-      (modifier: keyof ShortcutManagerStore['modifiers']) => {
+      (modifier: keyof ShortcutManagerStore["modifiers"]) => {
         this.store.modifiers[modifier] = event[modifier];
       }
     );
@@ -167,9 +167,9 @@ export class ShortcutManager {
     const key = normalizeKey(
       Object.entries(MODIFIERS)
         .map(([modifier, symbol]: [keyof typeof MODIFIERS, string]) =>
-          event[modifier] ? symbol : ''
+          event[modifier] ? symbol : ""
         )
-        .join('') + event.key
+        .join("") + event.key
     );
     // Rotate this key into the history
     this.store.history = this.store.history
@@ -180,7 +180,7 @@ export class ShortcutManager {
       if (!shortcut.action) return false;
       return (
         shortcut.chord ===
-        this.store.history.slice(-shortcut.chord.split(' ').length).join(' ')
+        this.store.history.slice(-shortcut.chord.split(" ").length).join(" ")
       );
     });
 
@@ -194,7 +194,7 @@ export class ShortcutManager {
         !isTextField ||
         match.textFieldEnabled ||
         (match.textFieldEnabled !== false &&
-          (match.chord === 'ESCAPE' || match.chord.match(RE_REMOVE_MODIFIERS)));
+          (match.chord === "ESCAPE" || match.chord.match(RE_REMOVE_MODIFIERS)));
 
       this.store.match = match;
       if (shouldAction) {
@@ -203,7 +203,7 @@ export class ShortcutManager {
         }
         match.action();
       }
-      this.store.history.push(new KeyHistory({ key: '' }));
+      this.store.history.push(new KeyHistory({ key: "" }));
     } else {
       this.store.match = null;
     }
@@ -213,7 +213,7 @@ export class ShortcutManager {
 
   handleKeyUp = () => {
     Object.keys(this.store.modifiers).forEach(
-      (modifier: keyof ShortcutManagerStore['modifiers']) => {
+      (modifier: keyof ShortcutManagerStore["modifiers"]) => {
         this.store.modifiers[modifier] = false;
       }
     );
@@ -224,9 +224,9 @@ export class ShortcutManager {
   private installDebugUi() {
     // Create the container if it doesn't exist
     this.container =
-      document.querySelector('.ShortcutManagerContainer') ||
-      document.body.appendChild(document.createElement('div'));
-    this.container.classList.add('ShortcutManagerContainer');
+      document.querySelector(".ShortcutManagerContainer") ||
+      document.body.appendChild(document.createElement("div"));
+    this.container.classList.add("ShortcutManagerContainer");
     // Render the shortcut manager in the container
     render(
       <ShortcutManagerUi
@@ -283,12 +283,12 @@ class ShortcutManagerUi extends Component<IProps> {
           <div className="ShortcutManager__Modifiers">
             {Object.entries(this.store.modifiers).map(
               ([modifier, pressed]: [
-                keyof ShortcutManagerStore['modifiers'],
+                keyof ShortcutManagerStore["modifiers"],
                 boolean
               ]) => (
                 <span
                   className={`ShortcutManager__Modifier ${
-                    pressed ? 'ShortcutManager__Modifier--pressed' : ''
+                    pressed ? "ShortcutManager__Modifier--pressed" : ""
                   }`}
                   key={modifier}
                 >
@@ -315,7 +315,7 @@ class ShortcutManagerUi extends Component<IProps> {
                 <header>
                   {`Layer ${String(this.store.layers.length - i).padStart(
                     2,
-                    '0'
+                    "0"
                   )}`}
                 </header>
                 {layer.shortcuts.map(shortcut => this.renderShortcut(shortcut))}
@@ -330,7 +330,7 @@ class ShortcutManagerUi extends Component<IProps> {
     const { history } = this.store;
 
     for (let i = history.length; i >= 0; --i) {
-      const historySlice = history.slice(-i).join(' ');
+      const historySlice = history.slice(-i).join(" ");
       const historySliceLength = historySlice.length;
 
       if (chord.startsWith(historySlice)) {
@@ -352,14 +352,14 @@ class ShortcutManagerUi extends Component<IProps> {
       // this.store.match.action === shortcut.action &&
       this.store.match.chord === shortcut.chord &&
       this.store.match.caption === shortcut.caption
-        ? 'Shortcut--triggered'
-        : '';
+        ? "Shortcut--triggered"
+        : "";
 
     const overriddenClass =
       this.store.shortcuts.find(other => other.chord === shortcut.chord) !==
       shortcut
-        ? 'Shortcut--overridden'
-        : '';
+        ? "Shortcut--overridden"
+        : "";
 
     return (
       <span
@@ -367,7 +367,7 @@ class ShortcutManagerUi extends Component<IProps> {
         key={shortcut.id}
       >
         <dt className="Shortcut__Chord">
-          {this.renderChord(shortcut.chord.replace(' ', ''))}
+          {this.renderChord(shortcut.chord.replace(" ", ""))}
         </dt>
         <dd className="Shortcut__Definition">{shortcut.caption}</dd>
       </span>

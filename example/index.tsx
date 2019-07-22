@@ -1,12 +1,13 @@
-import { createElement, Component, ChangeEvent } from 'react';
-import { render } from 'react-dom';
-import './index.css';
-import { KeyboardShortcuts } from '../src/keyboard-shortcuts';
+import * as React from "react";
+import { Component, ChangeEvent } from "react";
+import { render } from "react-dom";
+import "./index.css";
+import { KeyboardShortcuts } from "../src/keyboard-shortcuts";
 
 const root =
-  document.querySelector('#root') ||
-  document.body.appendChild(document.createElement('div'));
-root.id = 'root';
+  document.querySelector("#root") ||
+  document.body.appendChild(document.createElement("div"));
+root.id = "root";
 
 type Shortcut = { chord: string; caption: string };
 
@@ -18,9 +19,9 @@ interface IState {
 
 class Application extends Component<{}, IState> {
   state: IState = {
-    value: '',
+    value: "",
     debug: false,
-    shortcuts: [],
+    shortcuts: []
   };
 
   setValue = (value: string) => () => {
@@ -31,18 +32,18 @@ class Application extends Component<{}, IState> {
     this.setState({ debug: !this.state.debug });
   };
 
-  updateShortcut = (index: number, field: keyof IState['shortcuts'][0]) => (
+  updateShortcut = (index: number, field: keyof IState["shortcuts"][0]) => (
     event: ChangeEvent
   ) => {
     let { value } = event.target as HTMLInputElement;
     const { shortcuts } = this.state;
 
-    const shortcut = shortcuts[index] || { chord: '', caption: '' };
+    const shortcut = shortcuts[index] || { chord: "", caption: "" };
     shortcut[field] = value;
     shortcuts[index] = shortcut;
 
     this.setState({
-      shortcuts,
+      shortcuts
     });
   };
 
@@ -50,7 +51,7 @@ class Application extends Component<{}, IState> {
     this.setState({
       shortcuts: this.state.shortcuts.filter(
         shortcut => shortcut !== shortcutToRemove
-      ),
+      )
     });
   };
 
@@ -82,19 +83,18 @@ class Application extends Component<{}, IState> {
           <code>&lt;KeyboardShortcuts /></code> component, it creates a layer.
           This is useful, as you can have a temporary component such as a modal
           that brings its own layers with it. The shortcuts are removed
-          automatically when the parent component is removed. (<code className="Example__Key">
-            ^X
-          </code>
+          automatically when the parent component is removed. (
+          <code className="Example__Key">^X</code>
           is overridden, which you will see later)
         </p>
         <KeyboardShortcuts
           shortcuts={{
             // This is a basic chord
-            'X A': this.setValue('X then A'),
+            "X A": this.setValue("X then A"),
             // This is Ctrl-X
-            '^X': this.setValue('Control X'),
+            "^X": this.setValue("Control X"),
             // This is the left arrow
-            ArrowLeft: this.setValue('Left Arrow'),
+            ArrowLeft: this.setValue("Left Arrow")
           }}
         />
         <dl className="Example__Shortcuts">
@@ -132,15 +132,15 @@ class Application extends Component<{}, IState> {
           shortcuts={[
             // Simple shortcut with description
             {
-              chord: '+?',
-              caption: 'Do something',
-              action: this.setValue('Question Mark'),
+              chord: "+?",
+              caption: "Do something",
+              action: this.setValue("Question Mark")
             },
             {
-              chord: '^x',
-              caption: 'Override',
-              action: this.setValue('Control X (Override)'),
-            },
+              chord: "^x",
+              caption: "Override",
+              action: this.setValue("Control X (Override)")
+            }
           ]}
         />
         <dl className="Example__Shortcuts">
@@ -161,14 +161,14 @@ class Application extends Component<{}, IState> {
         <p>
           You can use the debug view to view the layers in real time. The debug
           view will show you when a shortcut is overridden, and it will allow
-          you to see the names of shortcuts if you have provided them.{' '}
+          you to see the names of shortcuts if you have provided them.{" "}
         </p>
         <p>
           <button
             onClick={this.toggleDebugger}
             className="Example__Button Example__Button--big"
           >
-            {debug ? 'Disable' : 'Enable'} Debugger
+            {debug ? "Disable" : "Enable"} Debugger
           </button>
         </p>
         <p>
@@ -195,7 +195,7 @@ class Application extends Component<{}, IState> {
           shortcuts={shortcuts.map(shortcut => ({
             chord: shortcut.chord,
             caption: shortcut.caption,
-            action: this.setValue(shortcut.caption || shortcut.chord),
+            action: this.setValue(shortcut.caption || shortcut.chord)
           }))}
           debug={debug}
         />
@@ -208,14 +208,14 @@ class Application extends Component<{}, IState> {
             </tr>
           </thead>
           <tbody>
-            {shortcuts.concat({ chord: '', caption: '' }).map((shortcut, i) => (
+            {shortcuts.concat({ chord: "", caption: "" }).map((shortcut, i) => (
               <tr key={i}>
                 <td className="CustomShortcuts__Chord">
                   <input
                     className="CustomShortcuts__Input"
                     type="text"
                     value={shortcut.chord}
-                    onChange={this.updateShortcut(i, 'chord')}
+                    onChange={this.updateShortcut(i, "chord")}
                   />
                 </td>
                 <td className="CustomShortcuts__Caption">
@@ -224,7 +224,7 @@ class Application extends Component<{}, IState> {
                     type="text"
                     value={shortcut.caption}
                     placeholder={shortcut.chord}
-                    onChange={this.updateShortcut(i, 'caption')}
+                    onChange={this.updateShortcut(i, "caption")}
                   />
                 </td>
                 <td>
@@ -241,10 +241,10 @@ class Application extends Component<{}, IState> {
         </table>
         <p>
           Remember that in order to make a chord, you must separate characters
-          by a space. For example, <code className="Example__Key">XA</code>{' '}
-          would be impossible to type, whereas{' '}
-          <code className="Example__Key">X A</code> means type{' '}
-          <code className="Example__Key">X</code> followed by{' '}
+          by a space. For example, <code className="Example__Key">XA</code>{" "}
+          would be impossible to type, whereas{" "}
+          <code className="Example__Key">X A</code> means type{" "}
+          <code className="Example__Key">X</code> followed by{" "}
           <code className="Example__Key">A</code>
         </p>
       </div>

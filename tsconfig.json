@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "experimentalDecorators": true,
+    "incremental": true,
     "jsx": "react",
-    "moduleResolution": "node",
     "module": "commonjs",
-    "target": "esnext",
+    "moduleResolution": "node",
     "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "outDir": "dist",
+    "sourceMap": true,
     "strictNullChecks": true,
-    "noEmit": true,
-    "noUnusedLocals": true
+    "target": "esnext"
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules", "dist"]
 }
