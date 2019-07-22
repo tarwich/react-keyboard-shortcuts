@@ -1,6 +1,6 @@
 {
   "name": "@tarwich/react-keyboard-shortcuts",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": ".tmp/build/index.js",
   "typescript": "index.ts",
