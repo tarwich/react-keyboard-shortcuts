@@ -8,10 +8,10 @@
     "moduleResolution": "node",
     "noImplicitAny": true,
     "noUnusedLocals": true,
-    "outDir": ".tmp/build",
+    "outDir": "dist",
     "sourceMap": true,
     "strictNullChecks": true,
     "target": "esnext"
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist"]
 }

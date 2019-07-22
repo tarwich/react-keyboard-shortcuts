@@ -5,10 +5,11 @@
   "main": ".tmp/build/index.js",
   "typescript": "index.ts",
   "files": [
-    ".tmp/build/**/*",
-    "!.tmp/build/example",
+    "dist/**/*",
+    "!dist/example",
     "!tsconfig.tsbuildinfo"
   ],
+  "types": "dist",
   "dependencies": {},
   "devDependencies": {
     "@types/lodash": "4.14.136",
@@ -25,7 +26,7 @@
     "typescript": "^3.2.2"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --emitDeclarationOnly && parcel build --out-dir dist --cache-dir .tmp/.cache index.ts",
     "check": "tsc --noEmit",
     "dev": "node scripts/run",
     "format": "prettier --write src/* example/* *.md *.json *.ts *.js",
