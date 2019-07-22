@@ -1,9 +1,14 @@
 {
-  "name": "react-keyboard-shortcuts",
+  "name": "@tarwich/react-keyboard-shortcuts",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": ".tmp/build/index.js",
   "typescript": "index.ts",
+  "files": [
+    ".tmp/build/**/*",
+    "!.tmp/build/example",
+    "!tsconfig.tsbuildinfo"
+  ],
   "dependencies": {},
   "devDependencies": {
     "@types/lodash": "4.14.136",
@@ -13,13 +18,20 @@
     "lodash": "4.17.14",
     "parcel-bundler": "^1.11.0",
     "parcel-plugin-prettier": "github:tarwich/parcel-plugin-prettier",
+    "prettier": "1.18.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "sass": "^1.15.2",
     "typescript": "^3.2.2"
   },
   "scripts": {
-    "dev": "node scripts/run"
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "dev": "node scripts/run",
+    "format": "prettier --write src/* example/* *.md *.json *.ts *.js",
+    "prepublishOnly": "npm run format && npm run check",
+    "prepare": "npm run build",
+    "version": "git add -A"
   },
   "repository": {
     "type": "git",
@@ -34,5 +46,10 @@
   "homepage": "https://github.com/tarwich/react-keyboard-shortcuts#readme",
   "eslintConfig": {
     "extends": "eslint-config-tarwich"
-  }
+  },
+  "browserslist": [
+    "last 2 chrome versions",
+    "last 1 firefox versions",
+    "last 1 safari versions"
+  ]
 }

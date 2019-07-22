@@ -1,6 +1,6 @@
-import { isEqual } from 'lodash';
-import { Component } from 'react';
-import { ShortcutManager, ShortcutLayer, Shortcut } from './shortcut-manager';
+import { isEqual } from "lodash";
+import { Component } from "react";
+import { ShortcutManager, ShortcutLayer, Shortcut } from "./shortcut-manager";
 
 const shortcutManager = new ShortcutManager();
 

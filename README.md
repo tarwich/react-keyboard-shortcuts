@@ -24,18 +24,21 @@ npm install @tarwich/react-keyboard-shortcuts
 ```
 
 ```jsx
-import * as React from 'react';
-import { render } from 'react-dom';
-import { KeyboardShortcuts } from 'react-keyboard-shortcuts';
+import * as React from "react";
+import { render } from "react-dom";
+import { KeyboardShortcuts } from "react-keyboard-shortcuts";
 
-const root = document.querySelector('#root') ||
-  document.body.appendChild(document.createElement('div'))
-;
-
+const root =
+  document.querySelector("#root") ||
+  document.body.appendChild(document.createElement("div"));
 render(
-  <KeyboardShortcuts shortcuts={{
-    '^x': () => { console.log('You pressed control X!'); }
-  }} />,
+  <KeyboardShortcuts
+    shortcuts={{
+      "^x": () => {
+        console.log("You pressed control X!");
+      }
+    }}
+  />,
   root
 );
 ```
@@ -47,10 +50,12 @@ keyboard keys, and the action is the value. This method is less flexible, but a
 lot easier to get started with.
 
 ```js
-<KeyboardShortcuts shortcuts={{
-  'a': () => console.log('You pressed "a"'),
-  'b': () => console.log('You pressed "b"'),
-}} />
+<KeyboardShortcuts
+  shortcuts={{
+    a: () => console.log('You pressed "a"'),
+    b: () => console.log('You pressed "b"')
+  }}
+/>
 ```
 
 ## Modifier keys
@@ -61,10 +66,10 @@ approach.
 
 | Code | Actual Key |
 | :--: | :--------: |
-| ^    | Control    |
-| !    | Alt        |
-| +    | Shift      |
-| #    | Meta       |
+|  ^   |  Control   |
+|  !   |    Alt     |
+|  +   |   Shift    |
+|  #   |    Meta    |
 
 ## Chords
 
@@ -74,19 +79,21 @@ In Gmail, for example, the chord `G I` means "_Go to inbox_". You can easily pre
 
 In order to make chords, use a space to separate keys. Here are some examples:
 
-| Chord   | Description |
-| ---     | ---         |
-| `X`     | Not a chord. Just press X |
-| `X A`   | Press X, then press A |
-| `^X !A` | Press Control-X, then press Alt-A |
+| Chord   | Description                         |
+| ------- | ----------------------------------- |
+| `X`     | Not a chord. Just press X           |
+| `X A`   | Press X, then press A               |
+| `^X !A` | Press Control-X, then press Alt-A   |
 | `XA`    | Error. This is impossible to invoke |
 
 With chords, you can even do "cheat codes"
 
 ### The Doom cheat code
+
 `I D D Q D`
 
 ### Konami cheat code
+
 `ArrowUp ArrowUp ArrowDown ArrowDown ArrowLeft ArrowRight ArrowLeft ArrowRight B A` Konami!
 
 ## Debug mode
