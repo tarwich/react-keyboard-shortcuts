@@ -173,6 +173,8 @@ p + .Example__Shortcuts {
 
 .Example__DebugView--float .ShortcutManager {
   position: fixed;
+  top: 10px;
+  right: 10px;
 }
 
 .CustomShortcuts {
