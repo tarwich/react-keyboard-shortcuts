@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono");
+@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono');
 
 .Example * {
   margin: 0;
@@ -6,8 +6,8 @@
 }
 
 .Example {
-  --sans-serif: "Roboto", sans-serif;
-  --monospace: "Roboto Mono", monospace;
+  --sans-serif: 'Roboto', sans-serif;
+  --monospace: 'Roboto Mono', monospace;
   font-family: var(--sans-serif);
   max-width: 500px;
   margin: auto;
@@ -30,7 +30,7 @@
 
 .Example h2:before,
 .Example h2:after {
-  content: " ";
+  content: ' ';
   display: inline-block;
   border-top: 1px solid hsla(220, 20%, 80%);
 }
@@ -153,6 +153,26 @@ p + .Example__Shortcuts {
 
 .Example__BigButton:active {
   background: hsl(200, 90%, 75%);
+}
+
+.Example__DebugView {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+.Example__DebugView:empty {
+  padding: 10px;
+}
+
+.Example__DebugView--float {
+  display: initial;
+}
+
+.Example__DebugView--float .ShortcutManager {
+  position: fixed;
 }
 
 .CustomShortcuts {

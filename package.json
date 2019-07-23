@@ -13,17 +13,17 @@
   "dependencies": {},
   "devDependencies": {
     "@types/lodash": "4.14.136",
-    "@types/react-dom": "16.0.11",
-    "eslint": "^5.10.0",
+    "@types/react-dom": "16.8.4",
+    "eslint": "6.1.0",
     "eslint-config-tarwich": "github:tarwich/eslint-config-tarwich",
-    "lodash": "4.17.14",
-    "parcel-bundler": "^1.11.0",
+    "lodash": "4.17.15",
+    "parcel-bundler": "1.12.3",
     "parcel-plugin-prettier": "github:tarwich/parcel-plugin-prettier",
     "prettier": "1.18.2",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
-    "sass": "^1.15.2",
-    "typescript": "^3.2.2"
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
+    "sass": "1.22.7",
+    "typescript": "3.5.3"
   },
   "scripts": {
     "build": "tsc --emitDeclarationOnly && parcel build --out-dir dist --cache-dir .tmp/.cache index.ts",
