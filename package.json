@@ -52,5 +52,10 @@
     "last 2 chrome versions",
     "last 1 firefox versions",
     "last 1 safari versions"
-  ]
+  ],
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "endOfLine": "lf"
+  }
 }

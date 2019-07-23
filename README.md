@@ -24,19 +24,19 @@ npm install @tarwich/react-keyboard-shortcuts
 ```
 
 ```jsx
-import * as React from "react";
-import { render } from "react-dom";
-import { KeyboardShortcuts } from "react-keyboard-shortcuts";
+import * as React from 'react';
+import { render } from 'react-dom';
+import { KeyboardShortcuts } from 'react-keyboard-shortcuts';
 
 const root =
-  document.querySelector("#root") ||
-  document.body.appendChild(document.createElement("div"));
+  document.querySelector('#root') ||
+  document.body.appendChild(document.createElement('div'));
 render(
   <KeyboardShortcuts
     shortcuts={{
-      "^x": () => {
-        console.log("You pressed control X!");
-      }
+      '^x': () => {
+        console.log('You pressed control X!');
+      },
     }}
   />,
   root
@@ -53,7 +53,7 @@ lot easier to get started with.
 <KeyboardShortcuts
   shortcuts={{
     a: () => console.log('You pressed "a"'),
-    b: () => console.log('You pressed "b"')
+    b: () => console.log('You pressed "b"'),
   }}
 />
 ```
