@@ -16,7 +16,7 @@
     "@types/react-dom": "16.8.4",
     "eslint": "6.1.0",
     "eslint-config-tarwich": "github:tarwich/eslint-config-tarwich",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "parcel-bundler": "1.12.3",
     "parcel-plugin-prettier": "github:tarwich/parcel-plugin-prettier",
     "prettier": "1.18.2",
